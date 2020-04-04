@@ -1,0 +1,120 @@
+--- ../NKF.python3/NKF_python.c	2020-04-05 06:17:11.291115000 +0900
++++ libnkf.c	2020-04-05 06:47:37.420761720 +0900
+@@ -1,3 +1,4 @@
++/* Custom NKF Library for C/C++ from NKF.python3/NKF_python.c */
+ /*
+ Changes.
+ 2009.6.2    Remove WISH_TRUE, use get_guessed_code() for nkf-2.0.9
+@@ -20,7 +21,8 @@ Changes.
+ **    THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE.
+ ***************************************************************************/
+ 
+-#include "Python.h"
++//#include "Python.h"
++#include "libnkf.h"
+ #include <setjmp.h>
+ 
+ #undef getc
+@@ -73,7 +75,8 @@ pynkf_putchar(int c)
+     *pynkf_optr++ = c;
+   }else{
+     size = pynkf_obufsize + pynkf_obufsize;
+-    p = (unsigned char *)PyMem_Realloc(pynkf_outbuf, size + 1);
++//    p = (unsigned char *)PyMem_Realloc(pynkf_outbuf, size + 1);
++    p = (unsigned char *)realloc(pynkf_outbuf, size + 1);
+     if (pynkf_outbuf == NULL){ longjmp(env, 1); }
+     pynkf_outbuf = p;
+     pynkf_optr = pynkf_outbuf + pynkf_obufsize;
+@@ -88,16 +91,19 @@ pynkf_putchar(int c)
+ #include "../utf8tbl.c"
+ #include "../nkf.c"
+ 
+-static PyObject *
+-pynkf_convert(unsigned char* str, int strlen, char* opts, int optslen)
++//static PyObject *
++//pynkf_convert(unsigned char* str, int strlen, char* opts, int optslen)
++extern unsigned char*
++nkf_convert(unsigned char* str, int strlen, char* opts, int optslen)
+ {
+-  PyObject * res;
++//  PyObject * res;
+ 
+   pynkf_ibufsize = strlen + 1;
+   pynkf_obufsize = pynkf_ibufsize * 1.5 + 256;
+-  pynkf_outbuf = (unsigned char *)PyMem_Malloc(pynkf_obufsize);
++//  pynkf_outbuf = (unsigned char *)PyMem_Malloc(pynkf_obufsize);
++  pynkf_outbuf = (unsigned char *)malloc(pynkf_obufsize);
+   if (pynkf_outbuf == NULL){
+-    PyErr_NoMemory();
++//    PyErr_NoMemory();
+     return NULL;
+   }
+   pynkf_outbuf[0] = '\0';
+@@ -117,21 +123,25 @@ pynkf_convert(unsigned char* str, int st
+     kanji_convert(NULL);
+ 
+   }else{
+-    PyMem_Free(pynkf_outbuf);
+-    PyErr_NoMemory();
++//    PyMem_Free(pynkf_outbuf);
++//    PyErr_NoMemory();
++    free(pynkf_outbuf);
+     return NULL;
+   }
+ 
+   *pynkf_optr = 0;
+-  res = PyBytes_FromString(pynkf_outbuf);
+-  PyMem_Free(pynkf_outbuf);
+-  return res;
++//  res = PyBytes_FromString(pynkf_outbuf);
++//  PyMem_Free(pynkf_outbuf);
++//  return res;
++  return pynkf_outbuf;
+ }
+ 
+-static PyObject *
+-pynkf_convert_guess(unsigned char* str, int strlen)
++//static PyObject *
++//pynkf_convert_guess(unsigned char* str, int strlen)
++extern const char*
++nkf_convert_guess(unsigned char* str, int strlen)
+ {
+-  PyObject * res;
++//  PyObject * res;
+   const char *codename;
+ 
+   pynkf_ibufsize = strlen + 1;
+@@ -147,10 +157,12 @@ pynkf_convert_guess(unsigned char* str,
+ 
+   codename = get_guessed_code();
+ 
+-  res = PyUnicode_FromString(codename);
+-  return res;
++//  res = PyUnicode_FromString(codename);
++//  return res;
++  return codename;
+ }
+ 
++/*
+ #ifndef EXTERN_NKF
+ static
+ #endif
+@@ -200,11 +212,12 @@ static struct PyModuleDef nkfmodule = {
+   -1,
+   nkfMethods
+ };
++*/
+ 
+ /* Module initialization function */
+-PyMODINIT_FUNC
+-PyInit_nkf(void)
+-{
+-  return PyModule_Create(&nkfmodule);
+-}
+-#endif
++//PyMODINIT_FUNC
++//PyInit_nkf(void)
++//{
++//  return PyModule_Create(&nkfmodule);
++//}
++//#endif
