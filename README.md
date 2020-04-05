@@ -390,12 +390,17 @@ Copyright (c) 1987, Fujitsu LTD. (Itaru ICHIKAWA).
 
 Copyright (c) 1996-2012, The nkf Project.
 
+https://ja.osdn.net/projects/nkf/
 
 # C LIBRARY
 by AZO
+
 ```
 cd libnkf
 make
 make install
 ```
+
+referenced to https://www.meiseid.co.jp/article/make-libnkf-for-c-cpp
+
 
